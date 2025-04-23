@@ -6,31 +6,12 @@ import (
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/go-chi/chi"
 )
 
 type JSONObject struct {
 	ID    string `json:"id,omitempty"`
 	Token string `json:"token,omitempty"`
-	Error string `json:"error,omitempty"`
-}
-
-func SendErrorResponse(res http.ResponseWriter, errorMessage string, statusCode int) {
-	response := JSONObject{Error: errorMessage}
-
-	resp, err := json.Marshal(response)
-	if err != nil {
-		log.Println(err)
-		http.Error(res, "ошибка при сериализации JSON", http.StatusInternalServerError)
-	}
-
-	res.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	res.WriteHeader(statusCode)
-	_, err = res.Write(resp)
-	if err != nil {
-		log.Println(err)
-	}
+	Error error  `json:"error,omitempty"`
 }
 
 func nextDayHandler(res http.ResponseWriter, rep *http.Request) {
@@ -44,7 +25,7 @@ func nextDayHandler(res http.ResponseWriter, rep *http.Request) {
 		return
 	}
 
-	taskDay, err := DateParse(now, dateStr, repeatStr)
+	taskDay, err := NextDate(now, dateStr, repeatStr)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -53,9 +34,36 @@ func nextDayHandler(res http.ResponseWriter, rep *http.Request) {
 	res.Write([]byte(taskDay))
 }
 
-func Init() {
-	r := chi.NewRouter()
+func writeJSON(w http.ResponseWriter, data any) {
+	resp, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Ошибка сериализации", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write(resp)
+	if err != nil {
+		log.Println(err)
+	}
+}
 
+// // func taskHandler(w http.ResponseWriter, r *http.Request) {
+// // 	switch r.Method {
+// // 	case http.MethodPost:
+// // 		addTaskHandler(w, r)
+// 		// case http.MethodGet:
+// 		// 	getTaskHandler(w, r)
+// 		// case http.MethodPut:
+// 		// 	updateTaskHandler(w, r)
+// 	}
+
+// }
+
+func Init() {
 	http.HandleFunc("/api/nextdate", nextDayHandler)
-	r.Post("/api/task", addTaskHandler)
+	http.HandleFunc("/api/task", addTaskHandler)
+	// 	http.HandleFunc("/api/tasks", tasksHandler)
+	// 	http.HandleFunc("/api/task/done", doneTaskHandler)
 }

@@ -21,7 +21,7 @@ func checkDate(task *db.Task) error {
 	}
 	_, err := time.Parse(timeFormat, task.Date)
 	if err != nil {
-		return fmt.Errorf("ошибка при парсинге")
+		return fmt.Errorf("дата указана в неправильном формате")
 	}
 
 	if task.Date < now.Format(timeFormat) {
@@ -30,7 +30,7 @@ func checkDate(task *db.Task) error {
 		} else {
 			next, err := NextDate(now, task.Date, task.Repeat)
 			if err != nil {
-				return fmt.Errorf("ошибка при парсинге даты: %w", err)
+				return fmt.Errorf("правило повторения указано в неправильном формате")
 			}
 			task.Date = next
 		}
@@ -44,36 +44,32 @@ func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&task)
 	if err != nil {
-		log.Println(err)
-		http.Error(w, "Ошибка десериализации", http.StatusBadRequest)
+		errTxt := fmt.Errorf("ошибка десериализации JSON")
+		errorResp := JSONObject{Error: errTxt}
+		writeJSON(w, errorResp)
 		return
 	}
+
+	if task.Title == "" {
+		errTxt := fmt.Errorf("не указан заголовок задачи")
+		errorResp := JSONObject{Error: errTxt}
+		writeJSON(w, errorResp)
+		return
+	}
+
 	err = checkDate(&task)
 	if err != nil {
-		log.Println(err)
-		http.Error(w, "Неверный формат", http.StatusBadRequest)
+		errorResp := JSONObject{Error: err}
+		writeJSON(w, errorResp)
 		return
 	}
-	result, err := DB.Exec("INSERT INTO scheduler (date, title, comment, repeat) VALUES (:date, :title, :comment, :repeat)",
-		sql.Named("date", task.Date),
-		sql.Named("title", task.Title),
-		sql.Named("comment", task.Comment),
-		sql.Named("repeat", task.Repeat))
 
+	id, err := db.AddTask(&task)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "ошибка при парсинге времени", http.StatusBadRequest)
-		return
+		http.Error(w, fmt.Sprintf("%w", err), http.StatusBadRequest)
 	}
 
-	id, err := result.LastInsertId()
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "ошибка при получении id", http.StatusBadRequest)
-		return
-	}
-	res := db.Task{ID: fmt.Sprintf("%d", id), Date: task.Date, Title: task.Title, Comment: task.Comment, Repeat: task.Repeat}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	json.NewEncoder(w).Encode(res)
+	res := JSONObject{ID: fmt.Sprintf("%d", id)}
+	writeJSON(w, res)
 }

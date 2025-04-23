@@ -25,19 +25,19 @@ func ParseRepeat(repeat string) (string, int, error) {
 	return repeat, 0, nil
 }
 
-func DateParse(now time.Time, dateStr string, repeat string) (string, error) {
-	date, err := time.Parse(timeFormat, dateStr)
-	if err != nil {
-		return "", fmt.Errorf("ошибка при парсинге времени date: %w", err)
-	}
+// func DateParse(now time.Time, dateStr string, repeat string) (string, error) {
+// 	date, err := time.Parse(timeFormat, dateStr)
+// 	if err != nil {
+// 		return "", fmt.Errorf("ошибка при парсинге времени date: %w", err)
+// 	}
 
-	taskDays, err := NextDate(now, date.Format(timeFormat), repeat)
-	if err != nil {
-		return "", fmt.Errorf("ошибка в функции NextDate: %w", err)
-	}
+// 	taskDay, err := NextDate(now, date.Format(timeFormat), repeat)
+// 	if err != nil {
+// 		return "", fmt.Errorf("ошибка в функции NextDate: %w", err)
+// 	}
 
-	return taskDays, nil
-}
+// // 	return taskDay, nil
+// // }
 
 func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 
