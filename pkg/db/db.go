@@ -27,48 +27,28 @@ const schema string = `CREATE TABLE IF NOT EXISTS scheduler (
 
 var db *sql.DB
 
-func Tasks(limit int) ([]*Task, error) {
+// func Tasks(limit int) ([]*Task, error) {
 
-	var tasks []*Task
+// 	var tasks []*Task
 
-	rows, err := db.Query("SELECT * FROM scheduler WHERE date = :date LIMIT :limit", sql.Named("limlt", limit))
-	if err != nil {
-		return nil, fmt.Errorf("ошибка select-запроса %w", err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var task Task
-		err := rows.Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
-		if err != nil {
-			return nil, fmt.Errorf("ошибка %w", err)
-		}
-		tasks = append(tasks, &task)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("ошибка %w", err)
-	}
-	return tasks, nil
-}
-
-func AddTask(task *Task) (int64, error) {
-	result, err := db.Exec("INSERT INTO scheduler (date, title, comment, repeat) VALUES (:date, :title, :comment, :repeat)",
-		sql.Named("date", task.Date),
-		sql.Named("title", task.Title),
-		sql.Named("comment", task.Comment),
-		sql.Named("repeat", task.Repeat))
-
-	if err != nil {
-		log.Println(err)
-		return 0, fmt.Errorf("ошибка sql-запроса")
-	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		log.Println(err)
-		return 0, fmt.Errorf("ошибка при получении id")
-	}
-	return id, nil
-}
+// 	rows, err := db.Query("SELECT * FROM scheduler WHERE date = :date LIMIT :limit", sql.Named("limlt", limit))
+// 	if err != nil {
+// 		return nil, fmt.Errorf("ошибка select-запроса %w", err)
+// 	}
+// 	defer rows.Close()
+// 	for rows.Next() {
+// 		var task Task
+// 		err := rows.Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
+// 		if err != nil {
+// 			return nil, fmt.Errorf("ошибка %w", err)
+// 		}
+// 		tasks = append(tasks, &task)
+// 	}
+// 	if err := rows.Err(); err != nil {
+// 		return nil, fmt.Errorf("ошибка %w", err)
+// 	}
+// 	return tasks, nil
+// }
 
 func Init(dbFile string) error {
 
@@ -91,4 +71,24 @@ func Init(dbFile string) error {
 		}
 	}
 	return nil
+}
+
+func AddTask(dateInt int, task *Task) (int64, error) {
+	result, err := db.Exec("INSERT INTO scheduler (date, title, comment, repeat) VALUES (:date, :title, :comment, :repeat)",
+		sql.Named("date", dateInt),
+		sql.Named("title", task.Title),
+		sql.Named("comment", task.Comment),
+		sql.Named("repeat", task.Repeat))
+
+	if err != nil {
+		log.Println(err)
+		return 0, fmt.Errorf("ошибка sql-запроса")
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return 0, fmt.Errorf("ошибка при получении id")
+	}
+	return id, nil
 }

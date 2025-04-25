@@ -1,13 +1,13 @@
 package main
 
 import (
-	"api"
+	// "api"
 	"db"
 	"server"
 )
 
 func main() {
-	api.Init()
+	// api.Init()
 	server.PushServer()
 	db.Init("scheduler.db")
 }
