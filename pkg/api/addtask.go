@@ -14,6 +14,9 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+//  функция проверяет необходимые условия при добавлении задачи, а именно:
+// корректность формата даты и наличие поля title. Возвращает дату в формате int и ошибку
+
 func checkDate(task *db.Task) (int, error) {
 
 	if task.Title == "" {
@@ -46,6 +49,32 @@ func checkDate(task *db.Task) (int, error) {
 	}
 	return dateInt, nil
 }
+
+// NextDayHandler принимает запрос
+// и возвращает следующую дату задачи или ошибку
+
+func NextDayHandler(res http.ResponseWriter, rep *http.Request) {
+	nowStr := rep.FormValue("now")
+	dateStr := rep.FormValue("date")
+	repeatStr := rep.FormValue("repeat")
+
+	now, err := time.Parse(timeFormat, nowStr)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	taskDay, err := NextDate(now, dateStr, repeatStr)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	res.Write([]byte(taskDay))
+}
+
+// обработчик POST-запроса /api/task
+// возвращает JSON объект с id
 
 func AddTaskHandler(storage *db.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

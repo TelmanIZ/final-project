@@ -2,17 +2,18 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
-	"time"
 )
 
+// JSONObject используется при формиравании JSON-объекта
 type JSONObject struct {
 	ID    string `json:"id,omitempty"`
 	Token string `json:"token,omitempty"`
 	Error string `json:"error,omitempty"`
 }
+
+// SendErrorResponse отправляет текст ошибки в формате JSON
 
 func SendErrorResponse(res http.ResponseWriter, errorMessage string, statusCode int) {
 	response := JSONObject{Error: errorMessage}
@@ -31,25 +32,7 @@ func SendErrorResponse(res http.ResponseWriter, errorMessage string, statusCode 
 	}
 }
 
-func NextDayHandler(res http.ResponseWriter, rep *http.Request) {
-	nowStr := rep.FormValue("now")
-	dateStr := rep.FormValue("date")
-	repeatStr := rep.FormValue("repeat")
-
-	now, err := time.Parse(timeFormat, nowStr)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	taskDay, err := NextDate(now, dateStr, repeatStr)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	res.Write([]byte(taskDay))
-}
+// writeJSON отправляет interface в формате JSON
 
 func writeJSON(w http.ResponseWriter, data any) {
 	resp, err := json.Marshal(data)

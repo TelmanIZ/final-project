@@ -8,14 +8,17 @@ import (
 	"time"
 
 	"github.com/TelmanIZ/final-project/pkg/db"
-	// "fmt"
+
 	"net/http"
-	// "time"
 )
 
+// TaskResponse используется для передачи списка задач в формате JSON
 type TasksResp struct {
 	Tasks []*db.Task `json:"tasks"`
 }
+
+// обработчик для GET-запроса /api/tasks, который возвращает список ближайших
+// задач в формате JSON
 
 func TasksHandler(storage *db.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -35,6 +38,9 @@ func TasksHandler(storage *db.DB) http.HandlerFunc {
 	}
 }
 
+//обработчик для GET-запроса /api/task?id=<id>.
+// Возращает JSON-объект со всеми полями задачи с указанным id
+
 func GetTaskHandler(storage *db.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("id")
@@ -46,6 +52,9 @@ func GetTaskHandler(storage *db.DB) http.HandlerFunc {
 		writeJSON(w, resp)
 	}
 }
+
+// PUT-обработчик /api/task, который обновлениет значение
+// полей в виде JSON-объекта
 
 func UpdateTaskHandler(storage *db.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

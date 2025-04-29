@@ -9,6 +9,8 @@ import (
 
 const timeFormat = "20060102"
 
+// функция ParseRepeat парсит строку и число
+
 func ParseRepeat(repeat string) (string, int, error) {
 	if strings.HasPrefix(repeat, "d ") {
 		repeatArray := strings.Split(repeat, " ")
@@ -24,6 +26,8 @@ func ParseRepeat(repeat string) (string, int, error) {
 	}
 	return repeat, 0, nil
 }
+
+// функция NextDate возвращает ближайшее время задачи
 
 func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 

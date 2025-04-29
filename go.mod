@@ -2,25 +2,16 @@ module github.com/TelmanIZ/final-project
 
 go 1.23.1
 
-replace server => ./pkg/server
-
-replace db => ./pkg/db
-
-replace api => ./pkg/api
-
 require (
-	db v0.0.0-00010101000000-000000000000
+	github.com/go-chi/chi v1.5.5
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/stretchr/testify v1.10.0
 	modernc.org/sqlite v1.37.0
-	server v0.0.0-00010101000000-000000000000
 )
 
 require (
-	api v0.0.0-00010101000000-000000000000 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/go-chi/chi v1.5.5 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
