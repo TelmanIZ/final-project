@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"time"
-	// "github.com/go-chi/chi"
 )
 
 type JSONObject struct {
@@ -52,37 +51,17 @@ func NextDayHandler(res http.ResponseWriter, rep *http.Request) {
 	res.Write([]byte(taskDay))
 }
 
-// func writeJSON(w http.ResponseWriter, data any) {
-// 	resp, err := json.Marshal(data)
-// 	if err != nil {
-// 		log.Println(err)
-// 		http.Error(w, "Ошибка сериализации", http.StatusInternalServerError)
-// 		return
-// 	}
-// 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-// 	w.WriteHeader(http.StatusOK)
-// 	_, err = w.Write(resp)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// }
-
-// // func taskHandler(w http.ResponseWriter, r *http.Request) {
-// // 	switch r.Method {
-// // 	case http.MethodPost:
-// // 		addTaskHandler(w, r)
-// 		// case http.MethodGet:
-// 		// 	getTaskHandler(w, r)
-// 		// case http.MethodPut:
-// 		// 	updateTaskHandler(w, r)
-// 	}
-
-// }
-
-// func Init() {
-// 	r := chi.NewRouter()
-// 	r.Get("/api/nextdate", nextDayHandler)
-// 	r.Post("/api/task", addTaskHandler)
-// 	// 	http.HandleFunc("/api/tasks", tasksHandler)
-// 	// 	http.HandleFunc("/api/task/done", doneTaskHandler)
-// }
+func writeJSON(w http.ResponseWriter, data any) {
+	resp, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Ошибка сериализации", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write(resp)
+	if err != nil {
+		log.Println(err)
+	}
+}
